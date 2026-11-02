@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sink Buddy</title>
+<style>
+  /* layout: a header strip, a big 3D stage, then renders and parts below */
+  :root {
+    --bg: #f3f6f6; --panel: #ffffff; --fg: #1d2a2b; --muted: #5d6f70; --accent: #2f8f93; --line: #d7e1e1;
+    --stage: #e7eeee;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif; --mono: ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141b1c; --panel: #1c2526; --fg: #e4ecec; --muted: #93a6a7; --accent: #5cc3c7; --line: #2c3a3b; --stage: #1a2324; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans); }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 24px; }
+  h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  h2 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  p { margin: 0; max-width: 70ch; color: var(--muted); }
+  #stage { position: relative; height: min(70vh, 640px); background: var(--stage); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+  .controls { position: absolute; left: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .controls label { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; user-select: none; }
+  .controls input { accent-color: var(--accent); margin-right: 6px; vertical-align: -1px; }
+  .hint { position: absolute; right: 12px; bottom: 10px; font-size: 12px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .grid figure { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .grid img { display: block; width: 100%; }
+  .grid figcaption { padding: 8px 12px; font-size: 13px; color: #333; border-top: 1px solid #e5e5e5; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  td { padding: 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:last-child { font-family: var(--mono); text-align: right; white-space: nowrap; padding-left: 16px; }
+  ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 75ch; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:grid;gap:6px">
+    <h1>Sink Buddy — concept v4</h1>
+    <p>Front row: sponge standing on edge, and the little guy. Back row: soap dispenser and an upright brush slot. Everything drains into a shared sloped pan, then out through the little guy sitting in an armchair built into the front wall, legs over the edge.</p>
+  </header>
+
+  <section id="stage">
+    <div class="controls">
+      <label><input type="checkbox" id="t-inserts" checked>Grates &amp; cup</label>
+      <label><input type="checkbox" id="t-contents" checked>Sponge / soap / brush</label>
+      <label><input type="checkbox" id="t-figure" checked>Figure</label>
+    </div>
+    <div class="hint">Drag to rotate · scroll to zoom · right-drag to pan</div>
+  </section>
+
+  <section>
+    <h2>Renders</h2>
+    <div class="grid">
+      <figure><img src="renders/1_loaded.png" alt="Loaded with sponge, soap and brush"><figcaption>Loaded</figcaption></figure>
+      <figure><img src="renders/2_empty.png" alt="Empty with inserts"><figcaption>Inserts only</figcaption></figure>
+      <figure><img src="renders/6_chair.png" alt="Armchair close-up"><figcaption>Armchair close-up</figcaption></figure>
+      <figure><img src="renders/4_figure.png" alt="Figure close-up"><figcaption>Figure and spout</figcaption></figure>
+      <figure><img src="renders/5_figure_side.png" alt="Figure side view"><figcaption>Side view</figcaption></figure>
+      <figure><img src="renders/3_drain_pan.png" alt="Drain pan from above"><figcaption>Drain pan, inserts removed</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="two">
+    <div>
+      <h2>Current numbers (all adjustable)</h2>
+      <table>
+        <tr><td>Overall footprint</td><td>182 × 102 mm</td></tr>
+        <tr><td>Sticks out past the front edge</td><td>≈ 15 (feet + spout)</td></tr>
+        <tr><td>Sponge (standing on edge)</td><td>110 long × 70 tall × 30 thick</td></tr>
+        <tr><td>Soap base (EKOLN, guessed oval)</td><td>82 × 45</td></tr>
+        <tr><td>Brush slot inner</td><td>70 × 28, 60 tall</td></tr>
+        <tr><td>Floor at drain / wall top</td><td>20 / 45</td></tr>
+        <tr><td>Floor slope front / sideways</td><td>3° / 2°</td></tr>
+        <tr><td>Spout bore</td><td>Ø 4.5, tilted 15° down</td></tr>
+        <tr><td>Figure height</td><td>≈ 60</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>Open questions</h2>
+      <ol>
+        <li>Figure: bigger? A specific character or style?</li>
+        <li>He sits at the right front corner. Swap sides with the sponge?</li>
+        <li>Will the spout reach the sink from the counter, or should he hang over the rim?</li>
+        <li>Real measurements: sponge, EKOLN base, brush handles (how many, how thick).</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const PARTS = [
+  ["body", 0x5ca8ad, 1, null],
+  ["figure", 0xf29e3f, 1, "figure"],
+  ["sponge_insert", 0xeeeeee, 1, "inserts"],
+  ["soap_insert", 0xeeeeee, 1, "inserts"],
+  ["brush_insert", 0xeeeeee, 1, "inserts"],
+  ["phantom_sponge", 0xf5d142, 0.5, "contents"],
+  ["phantom_soap", 0x4a4a50, 0.45, "contents"],
+  ["phantom_brush", 0xc0392b, 0.5, "contents"],
+];
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
+camera.up.set(0, 0, 1);
+camera.position.set(-120, -420, 300);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(111, 40, 40);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x667777, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.65); sun.position.set(-200, -300, 500); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(300, 200, 100); scene.add(fill);
+
+const groups = { figure: [], inserts: [], contents: [] };
+const loader = new THREE.STLLoader();
+for (const [name, color, opacity, group] of PARTS) {
+  loader.load(`out/${name}.stl`, geo => {
+    geo.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0.0,
+      transparent: opacity < 1, opacity, depthWrite: opacity === 1 });
+    const mesh = new THREE.Mesh(geo, mat);
+    if (opacity < 1) mesh.renderOrder = 1;
+    scene.add(mesh);
+    if (group) { groups[group].push(mesh); mesh.visible = document.getElementById("t-" + group).checked; }
+  });
+}
+for (const g of Object.keys(groups)) {
+  document.getElementById("t-" + g).addEventListener("change", e => groups[g].forEach(m => m.visible = e.target.checked));
+}
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+(function loop() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+</script>
+</body>
+</html>
